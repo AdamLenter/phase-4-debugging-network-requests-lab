@@ -63,11 +63,44 @@ developing your own process.
 - Add a new toy when the toy form is submitted
 
   - How I debugged:
+  I tried to add a toy. Then I opened my console and saw an error that each child in a list needs a unique key. I recognized that as a React error. So I went in to the React code and saw that each toy SHOULD have an key. So then I looked at the list of toys and saw that my toy had been added without a name or a number of likes. 
+  
+  I didn't want that bad entry in the list. So I went into my Rails console to delete it. But I discovered it hadn't actually been created. Therefore, the app must have added a toy to state without actually adding it to the database.
+
+  Time to troubleshoot the POST request...
+
+  I replaced the create method with a byebug. I tried to enter my toy again. I went into my byebug console and looked at params. The data looked good.
+
+  So I looked at the next line of code and saw Toys.create. I changed that to Toy.create and tried again.
+
+  Yikes - the toy didn't appear on the list. So I reloaded the page. Yikes - all the toys were gone. In my browser console window, there was an error in my GET request. What's up with that? I had a feeling there was something wrong with the toy i just added. So I went back into the Rails console to check on it...
+
+  Nope - my toy wasn't even on the list. Huh? So what happened to all the toys?
+  
+  Oops - wait - I had accidentally stopped my rails server. Started it again. There are the toys, but my new one isn't there.
+
+  I added a "rescue from" to my toys controller for the event that there is an error in creating the toy. 
+
+  Now it was created just fine. Hmmm... I guess accidentally stopping the server was the big mistake.
+
+  I created a new toy. It's fine. So I wasted 10 mins there. My bad.
 
 - Update the number of likes for a toy
 
   - How I debugged:
 
+  I clicked the "like" button and got a React error. So I went back and reloaded the page. The page reloaded fine and the like was there. It looks like something is wrong with the response. I hadn't actually read the error message. So I went back and replicated the error.
+  Here's the error: "Unexpected end of json input."
+
+  I glanced at the React code. It looks good. So there must be an issue with the Fetch response. I looked at the toys controller. In fact, there was no response being sent.
+
+  I added a response and tested it. Looks good.
+
+
+
 - Donate a toy to Goodwill (and delete it from our database)
 
   - How I debugged:
+  First I clicked the link. I received a 404 - not found. I reloaded the page and the toy was still there.
+
+  I checked the routes and saw that destroy wasn't on the list. I added it. Bada bing bada boom
